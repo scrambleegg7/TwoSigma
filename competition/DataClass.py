@@ -8,6 +8,7 @@ import os
 import pandas as pd
 
 from envParam import envParamLinux
+from envParam import envParamOsxBk
 from envParam import envParam
 
 class DataClass(object):
@@ -16,6 +17,8 @@ class DataClass(object):
         
         if pl.system() == "Linux":
             self.env = envParamLinux()
+        elif pl.system() == "Darwin":
+            self.env = envParamOsxBk()
         else:
             self.env = envParam()
             
@@ -34,6 +37,10 @@ class DataClass(object):
         
         self.train_data = self.df.get("train")
         return self.train_data
+        
+    def getTarget(self):
+        
+        return self.train_data.ix[:,"y"]
     
     def getColumns(self):
         return self.train_data.columns.tolist()

@@ -1,25 +1,25 @@
 # -*- coding: utf-8 -*-
 
 from DataClass import DataClass
+from DataAnalysisClass import DataAnalysisClass
+
 
 
 def proc1():
     
     
     
-    dataCls = DataClass()
-    colnames = dataCls.getColumns()
+    pass
 
-    print colnames
-
-
-    train_data = dataCls.getTrain()
-    print train_data.head()
+def analysis():
+    
+    analysisCls = DataAnalysisClass()
+    analysisCls.hist()
 
 
 def main():
     proc1()
-    
+    analysis()
 
 
 
