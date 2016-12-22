@@ -3,6 +3,11 @@
 from DataClass import DataClass
 from DataAnalysisClass import DataAnalysisClass
 
+from logging import getLogger, StreamHandler, DEBUG
+from logging import Formatter
+
+
+from logClass import MyHandler
 
 
 def proc1():
@@ -11,15 +16,33 @@ def proc1():
     
     pass
 
-def analysis():
+def analysis(log):
     
     analysisCls = DataAnalysisClass()
+    
+    analysisCls.timeStampAnalysis()
+    
+    colnames = analysisCls.getColumns()
+    
     analysisCls.hist()
 
 
+    log.info(colnames)
+    log.info(" length of columnas : %d" % len(colnames) )
+
+    #return colnames
+
 def main():
+
+    log = getLogger("root")
+    log.setLevel(DEBUG)
+    log.addHandler(MyHandler())
+
+    
+    
     proc1()
-    analysis()
+    analysis(log)
+
 
 
 

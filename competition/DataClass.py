@@ -36,11 +36,18 @@ class DataClass(object):
     def getTrain(self):
         
         self.train_data = self.df.get("train")
+        
+        
         return self.train_data
         
     def getTarget(self):
         
-        return self.train_data.ix[:,"y"]
+        return self.train_data.ix[:,"y"].tolist()
+        
+    def getTimeStamp(self):
+
+        return self.train_data.ix[:,"timestamp"].tolist()
+        
     
     def getColumns(self):
         return self.train_data.columns.tolist()
