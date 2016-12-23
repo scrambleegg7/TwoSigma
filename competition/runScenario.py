@@ -22,9 +22,12 @@ def analysis(log):
     
     analysisCls.timeStampAnalysis()
     
+    
+    analysisCls.featuresAnalyss()
+    
     colnames = analysisCls.getColumns()
     
-    analysisCls.hist()
+    #analysisCls.hist()
 
 
     log.info(colnames)

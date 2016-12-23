@@ -46,6 +46,18 @@ class DataAnalysisClass(MyLoggerDeconstClass):
 
     def featuresAnalyss(self):
         
+        startidx = 2 # start
+        endidx = 110
+        
+        dff = self.train_data.iloc[:,startidx:endidx]
+        
+        self.log.info("shape of features :%d %d" % (dff.shape[0],dff.shape[1]   ))
+        
+        #print dff.head()
+        
+        dff_drop = dff.dropna()
+        dff_zero = dff.fillna(0)
+        dff_mean = dff.mean()
         
         
 
@@ -63,6 +75,10 @@ class DataAnalysisClass(MyLoggerDeconstClass):
     
     def getColumns(self):
         return self.data.getColumns()
+        
+    def yGraph(self):
+        
+        pass
     
     def hist(self):
         
