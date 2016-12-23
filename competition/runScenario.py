@@ -30,11 +30,21 @@ def analysis(log):
     #analysisCls.hist()
 
 
-    log.info(colnames)
+    #log.info(colnames)
     log.info(" length of columnas : %d" % len(colnames) )
 
     #return colnames
 
+
+def loadCsvData(log):
+    
+    analysisCls = DataAnalysisClass()
+    analysisCls.loadCsvData("df_top10corr.csv")
+    
+    log.info("file has been loaded............. " )
+
+
+    analysisCls.startAnalysis()
 def main():
 
     log = getLogger("root")
@@ -43,9 +53,10 @@ def main():
 
     
     
-    proc1()
-    analysis(log)
+    #proc1()
+    #analysis(log)
 
+    loadCsvData(log)
 
 
 

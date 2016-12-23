@@ -11,9 +11,15 @@ from envParam import envParamLinux
 from envParam import envParamOsxBk
 from envParam import envParam
 
-class DataClass(object):
+
+from MyLoggerDeconstClass import MyLoggerDeconstClass
+
+class DataClass(MyLoggerDeconstClass):
     
     def __init__(self):
+        
+        super(DataClass,self).__init__()
+
         
         if pl.system() == "Linux":
             self.env = envParamLinux()
@@ -33,24 +39,46 @@ class DataClass(object):
         
         self.df = pd.HDFStore(fileinfo,"r")
         
+    def loadCsvData(self,filename="my_df.csv"):
+
+        datadir = self.env.datadir
+        
+        fileinfo = os.path.join(datadir,filename)
+
+        my_df = pd.read_csv(fileinfo,encoding='cp932')
+        
+        return my_df
+        
+        
+    def saveCsvData(self,my_df,filename="my_df.csv"):
+        
+        datadir = self.env.datadir
+        
+        fileinfo = os.path.join(datadir,filename)
+
+        my_df.to_csv(fileinfo,encoding='cp932',index=False)
+
     def getTrain(self):
         
         self.train_data = self.df.get("train")
         
-        
         return self.train_data
+        
+    def getId(self):
+        
+        return self.train_data.ix[:,"id"].values.tolist()
         
     def getTarget(self):
         
-        return self.train_data.ix[:,"y"].tolist()
+        return self.train_data.ix[:,"y"].values.tolist()
         
     def getTimeStamp(self):
 
-        return self.train_data.ix[:,"timestamp"].tolist()
+        return self.train_data.ix[:,"timestamp"].values.tolist()
         
     
     def getColumns(self):
-        return self.train_data.columns.tolist()
+        return self.train_data.columns.values.tolist()
         
     def getDf(self):
         return self.df
