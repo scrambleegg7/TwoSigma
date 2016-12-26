@@ -36,8 +36,14 @@ class DataClass(MyLoggerDeconstClass):
         datadir = self.env.datadir
         
         fileinfo = os.path.join(datadir,filename)
+
+        self.log.info("Loading train.h5 .......")
         
         self.df = pd.HDFStore(fileinfo,"r")
+        
+        self.log.info("end to load data .....")
+        
+        
         
     def loadCsvData(self,filename="my_df.csv"):
 

@@ -10,6 +10,8 @@ from logging import Formatter
 from logClass import MyHandler
 
 
+
+
 def proc1():
     
     
@@ -23,15 +25,15 @@ def analysis(log):
     analysisCls.timeStampAnalysis()
     
     
-    analysisCls.featuresAnalyss()
+    analysisCls.BuildDataFeaturesAnalyss()
     
-    colnames = analysisCls.getColumns()
+    #colnames = analysisCls.getColumns()
     
     #analysisCls.hist()
 
 
     #log.info(colnames)
-    log.info(" length of columnas : %d" % len(colnames) )
+    #log.info(" length of columnas : %d" % len(colnames) )
 
     #return colnames
 
@@ -39,12 +41,21 @@ def analysis(log):
 def loadCsvData(log):
     
     analysisCls = DataAnalysisClass()
+
     analysisCls.loadCsvData("df_top10corr.csv")
     
     log.info("file has been loaded............. " )
 
 
     analysisCls.startAnalysis()
+    
+def featureAndLabels():
+
+    analysisCls = DataAnalysisClass()
+    
+    analysisCls.FeaturesTargetAnalyss_v2()
+    
+    
 def main():
 
     log = getLogger("root")
@@ -56,9 +67,9 @@ def main():
     #proc1()
     #analysis(log)
 
-    loadCsvData(log)
+    #loadCsvData(log)
 
-
+    featureAndLabels()
 
 
 if __name__ == "__main__":
