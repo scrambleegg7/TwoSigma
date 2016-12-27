@@ -23,116 +23,11 @@ import matplotlib.pyplot as plt
 
 import seaborn as sns
 
+from TrainDataClass import TrainData
+from FitModelClass import fitModel
+from FitModelClass import glmModel
 
 
-class fitModel():
-    def __init__(self, model, train, columns):
-
-        # first save the model ...
-        self.model   = model
-        self.columns = columns
-        
-        # Get the X, and y values, 
-        y = np.array(train.y)
-        
-        X = train[columns]
-        self.xMeans = X.mean(axis=0) # Remember to save this value
-        self.xStd   = X.std(axis=0)  # Remember to save this value
-
-        #X = np.array(X.fillna( self.xMeans ))
-        
-        X = np.array(X.fillna( 0.0 ))        
-        
-        X = (X - np.array(self.xMeans))/np.array(self.xStd)
-        
-        # fit the model
-        self.model.fit(X, y)
-        
-        return
-    
-    def predict(self, features):
-        
-        X = features[self.columns]
-
-        #X = np.array(X.fillna( self.xMeans ))
-        X = np.array(X.fillna( 0.0 ))
-
-        X = (X - np.array(self.xMeans))/np.array(self.xStd)
-
-        return self.model.predict(X)
-
-
-
-class TrainData(object):
-    
-    def __init__(self, train):
-
-        self.train = train
-        
-        self.train.fillna( 0.0  )
-        
-        self.uniq_id = sorted(self.train["id"].unique())
-        
-        #print self.uniq_id
-        self.y = self.train["y"]
-        
-        self.idvsTech30()
-        
-    
-    def pickOneId(self,topid):
-        
-        #uniq_id = np.random.permutation(uniq_id)
-        #topid = uniq_id[0]
-        #print "random top id",topid
-    
-        self.topid_train = self.train.loc[ self.train["id"] == topid, :]
-    
-        #print "shape", self.topid_train.shape
-        
-        #topid_uniq_timestamp = self.topid_train["timestamp"].unique()
-
-        #print "topid uniq timestamp length",  len(topid_uniq_timestamp)
-        
-    def idvsTech30(self):
-
-        corrs = []
-        
-        for train_id in self.uniq_id:
-            
-            self.pickOneId(train_id)
-            tech30 = self.topid_train["technical_30"]
-            y = self.topid_train["y"]
-                        
-            corr = np.corrcoef(tech30,y)[0][1]
-            
-            if np.isnan(corr):
-                corr = .0
-            
-            corrs.append(corr)
-            
-        sort_corr = np.argsort(corrs)[::-1][:10]
-        
-        print "top corr", np.array(corrs)[ sort_corr  ]
-        print "top id", np.array(self.uniq_id)[ sort_corr  ]
-        #print  sort_corr 
-        
-    def graph(self,topid):
-        
-        self.pickOneId(topid)
-        
-        h,w = self.topid_train.shape
-        
-        y = self.topid_train["y"]
-        tech30 = self.topid_train["technical_30"]
-        
-        plt.scatter(range(h), y)
-        plt.show()
-        
-        sns.jointplot(tech30, y)
-        plt.show()
-        
-        
-        
 
 def proc2(log):
     
@@ -153,8 +48,8 @@ def proc2(log):
     trainCls = TrainData( observation_test.train.copy() ) 
     
     
-    trainCls.graph(1276)
-    trainCls.graph(1083)    
+    trainCls.graph(2047)
+    #trainCls.graph(1083)    
 
 
 
@@ -176,7 +71,23 @@ def proc1(log):
     train_data = observation_test.train.copy()
     
 
-    model_test = fitModel(emcv, train_data, columns)
+    #model_test = fitModel(emcv, train_data, columns)
+    model_test = glmModel(train_data, columns)    
+    y_hat = model_test.BuildModel()
+    
+    print len(y_hat)
+    print y_hat[:10]
+    
+    y_true = model_test.df["y"]
+
+    print len(y_true)    
+    print y_true[:10]        
+    #score_ = r_score(y_true, y_hat)
+    
+    #print score_
+
+    
+    return 1
     
     """
     train_data = observation_test.train.copy()
@@ -259,8 +170,8 @@ def main():
 
 
     
-    proc2(log)
-    #proc1(log)    
+    proc1(log)
+    #proc2(log)    
     
 
 
