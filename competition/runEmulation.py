@@ -71,17 +71,16 @@ def proc1(log):
     train_data = observation_test.train.copy()
     
 
-    #model_test = fitModel(emcv, train_data, columns)
-    model_test = glmModel(train_data, columns)    
-    y_hat = model_test.BuildModel()
     
-    print len(y_hat)
-    print y_hat[:10]
-    
-    y_true = model_test.df["y"]
+    gmodel_test = glmModel(train_data, columns)        
+    y_hat = gmodel_test.BuildModel()
 
-    print len(y_true)    
-    print y_true[:10]        
+
+    model_test = fitModel(emcv, train_data, columns)
+
+    prediction_test  = model_test.predict(observation_test.features.copy())    
+    
+    print "No elasticnet observation :", len(prediction_test)
     #score_ = r_score(y_true, y_hat)
     
     #print score_

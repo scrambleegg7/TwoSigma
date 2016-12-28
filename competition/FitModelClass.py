@@ -21,6 +21,8 @@ class glmModel():
         self.columns = columns
         self.train = train
         
+
+        
         self.X = None
         self.y = None        
         
@@ -30,6 +32,7 @@ class glmModel():
         #self.model.fit(self.X, self.y)
         
         self.df["y"] = self.y
+        self.df["y_hat"] = 0.0
         
         print self.df.head()      
         
@@ -44,18 +47,22 @@ class glmModel():
         
         res = mod.fit()
 
-        print res.params        
-
-        self.df["y_hat"] = res.predict( self.df  )
+        print res.params
+        print res.summary()    
         
-        #print res.summary()
-
-        return self.df["y_hat"]
+        return res
         
     def dataNormalize(self):
         
         # Get the X, and y values, 
         #        
+        
+
+
+        self.train_drop = self.train.dropna()        
+        print self.train_drop.describe()
+
+        
         X = self.train[self.columns]
         
         self.df = X.copy()
