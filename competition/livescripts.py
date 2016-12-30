@@ -39,6 +39,9 @@ class glmModel():
         self.df = pd.DataFrame(self.X,columns=columns)
         
         self.df["y"] = self.y
+        
+        #self.df["y"] = np.exp( self.y )
+        
         self.df["y_hat"] = 0.0
         
         print( self.df.head() )     
@@ -56,14 +59,59 @@ class glmModel():
         
         self.X = (Xt - np.array(self.xMeans))/np.array(self.xStd)
         
+
         
+
+    def BuildModel2(self):
+
+        
+        ols_model = 'y ~ technical_30 + technical_20 + fundamental_11 + technical_19' 
+        
+        ols_model_poly = 'y ~ technical_30 + technical_20 + I(technical_30 ** 2.0) + I(technical_20 ** 2.0)' 
+        
+        
+        Xc = sm.add_constant(self.X)
+
+        #mod = sm.OLS(self.train["y"],Xc)        
+        
+        mod = smf.ols(formula=ols_model_poly , data= self.df)
+        
+        self.res = mod.fit()
+        
+
+    def predict2(self,features):
+        
+        self.Xt = features[self.columns]
+        self.normalize()
+        
+        i, w0, w1, w0_2, w1_2 = self.res.params        
+        wmtx = [w0, w1, w0_2, w1_2]
+        
+        #print wmtx
+
+        Xpoly = np.column_stack( ( self.X, self.X[:,0] ** 2.0  )  )        
+        Xpoly = np.column_stack( ( Xpoly, self.X[:,1] ** 2.0  )  )        
+        #print Xpoly.shape
+        
+        y_hat = np.sum(Xpoly * wmtx,axis=1) + i 
+
+        #print("-- length of y hat %d" %  len(y_hat))
+
+        #y_hat = 
+
+        return ( y_hat )
+                    
 
     def BuildModel(self):
 
         
         ols_model = 'y ~ technical_30 + technical_20 + fundamental_11 + technical_19' 
         
-        mod = smf.ols(formula=ols_model, data= self.df)
+        Xc = sm.add_constant(self.X)
+
+        mod = sm.OLS(self.train["y"],Xc)        
+        
+        #mod = smf.ols(formula=ols_model, data= self.df)
         
         self.res = mod.fit()
     
@@ -78,7 +126,10 @@ class glmModel():
         y_hat = np.sum(self.X * wmtx,axis=1) + i 
 
         #print("-- length of y hat %d" %  len(y_hat))
-        return y_hat
+
+        #y_hat = 
+
+        return ( y_hat )
         
 
 class mModel():
@@ -140,12 +191,13 @@ env = make()
 # We get our initial observation by calling "reset"
 observation = env.reset()
 
-columns = ['technical_30', 'technical_20', 'fundamental_11', 'technical_19']
+#columns = ['technical_30', 'technical_20', 'fundamental_11', 'technical_19']
+columns = ['technical_30', 'technical_20']
 
 train_data = observation.train.copy()
 
 gmodel_test = glmModel(train_data, columns)        
-gmodel_test.BuildModel()
+gmodel_test.BuildModel2()
 
 
 print("Train has {} rows".format(len(observation.train)))
@@ -153,11 +205,21 @@ print("Target column names: {}".format(", ".join(['"{}"'.format(col) for col in 
 
 
 
+#y_hat = gmodel_test.predict(observation.features.copy())    
+
+
+#return 1
+
 rewards = []
 
 while True:
     
-    y_hat = gmodel_test.predict(observation.features.copy())    
+    features = observation.features.copy()
+    
+        
+    
+    
+    y_hat = gmodel_test.predict2(observation.features.copy())    
     
     target = observation.target
     
@@ -177,6 +239,10 @@ while True:
         print("Timestamp #{}".format(timestamp))
         
         y_true = env.temp_test_y 
+        
+
+        #y_true = np.exp(y_true)        
+        
         score_ = r_score(y_true,y_hat)
         rewards.append(score_)
             
