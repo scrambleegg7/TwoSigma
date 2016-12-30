@@ -165,7 +165,7 @@ class mModel():
         self.X = (Xt - np.array(self.xMeans))/np.array(self.xStd)
         
         
-    def predict(self, features):
+    def predict2(self, features):
         
         X = features[self.columns]
 
@@ -188,6 +188,7 @@ class mModel():
 env = make()
 
 
+
 # We get our initial observation by calling "reset"
 observation = env.reset()
 
@@ -196,8 +197,13 @@ columns = ['technical_30', 'technical_20']
 
 train_data = observation.train.copy()
 
-gmodel_test = glmModel(train_data, columns)        
-gmodel_test.BuildModel2()
+#gmodel_test = glmModel(train_data, columns)        
+#gmodel_test.BuildModel2()
+
+
+elasticmodel = ElasticNetCV()
+gmodel_test = mModel(elasticmodel,train_data,columns)
+
 
 
 print("Train has {} rows".format(len(observation.train)))
