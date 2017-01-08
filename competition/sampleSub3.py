@@ -57,9 +57,7 @@ def checkNewIdfromFeatures(train,test):
     #print("   new test unique id %s" % new_test_uniq_id)
     print("   new test unique id lengyj %d" % len(new_test_uniq_id))
 
-
     print("   missing training id count from features  %s" % len(missing_training_id) )
-
 
 
 def TraingDataStd(train,test):
@@ -161,8 +159,7 @@ def TrainFeatCorr(train,test):
 
         #print("-- select timestamp: %d" % uniq_id)
 
-        df_select = df_train.loc[df_train.timestamp == uniq_id,:].copy()
-        train_feat = df_select[col].copy()
+        train_feat = df_train.loc[df_train.timestamp == uniq_id,col].copy()
         train_feat = train_feat.fillna(train_feat.mean(axis=0))
         #
         # failed to fill with mean, then fill with zero
@@ -212,7 +209,58 @@ def TrainFeatCorr(train,test):
     top_corr_timestamp = np.argsort(top_correlations)[::-1][:10]
 
     print top_corr_timestamp
+    return top_corr_timestamp
 
+def OLStraining(train,test,t_index,y_true):
+
+    df_train = train.copy()
+    df_test = test.copy()
+
+    col = [c for c in df_train.columns if c not in excl]
+
+    X = np.array([])
+    y = np.array([])
+
+
+    X = df_train.loc[df_train.timestamp.isin(t_index), col].copy()
+    y = df_train.loc[df_train.timestamp.isin(t_index), "y"].copy()
+
+    print("--- selected X shape %s" % (X.shape,))
+    print("--- selected y shape %s" % (y.shape,))
+
+    X = X.fillna(X.mean(axis=0))
+    #
+    # failed to fill with mean, then fill with zero
+    #
+    X = X.fillna(.0)
+
+    X = ( X - X.mean(axis=0) ) / X.std(axis=0)
+
+    X = np.array(X)
+
+    X = sm.add_constant(X)
+    ols_model = sm.OLS(y,X)
+    res = ols_model.fit()
+
+    print res.summary()
+
+
+    Xt = df_test.loc[:, col].copy()
+    Xt = Xt.fillna(Xt.mean(axis=0))
+    Xt = Xt.fillna(.0)
+
+    Xt = ( Xt - Xt.mean(axis=0) ) / Xt.std(axis=0)
+
+    Xt = np.array(Xt)
+
+    Xt = sm.add_constant(Xt)
+    Xt = sm.add_constant(Xt)
+
+    y_pred = res.predict(Xt)
+
+    print(len(y_pred),len(y_true))
+
+    print r_score(y_true,y_pred)
 
 def dataPCA(data,n_comp=5):
 
@@ -243,11 +291,12 @@ while True:
 
 
     features = observation.features.copy()
+    y_true = env.temp_test_y
 
-    TrainFeatCorr(train,features)
-
+    t_index = TrainFeatCorr(train,features)
+    OLStraining(train,features,t_index,y_true)
     #      checkNewIdfromFeatures(train,features)
-
+    break
 
 #    y_hat = gmodel_test.predict2(observation.features.copy())
 
