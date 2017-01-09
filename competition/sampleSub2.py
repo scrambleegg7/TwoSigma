@@ -35,8 +35,10 @@ def randInitializeWeights(L_in, L_out):
     """
     """
 
-    epsilon_init = 0.12
-    W = np.random.rand(L_out, 1 + L_in) * 2 * epsilon_init - epsilon_init
+    epsilon_init = 1.
+    #W = np.random.rand(L_out, 1 + L_in) * 2 * epsilon_init - epsilon_init
+    W = np.random.rand(L_out, 1 + L_in)
+
     return W
 
 def sigmoid(z):
@@ -187,17 +189,21 @@ y_cdfs = np.array( [  norm.cdf(x=y_, loc=mu, scale=std) for y_ in y_train ] )
 
 y_prob =  np.around(y_cdfs,decimals=1) * 10.
 
-
+# fill with mean
 train = train.fillna(d_mu)
 
 X = np.array(train)
 print("-- X shape %s" % (X.shape,))
 
 in_size = X.shape[1]
-hid_size = 25
+hid_size = 30
 num_labels = 11
 
 X = X.astype(np.float64)
+
+#for c in range(X.shape[1]):
+#    X[:,c] *= 255.0 / np.max(X[:,c])
+
 X /= X.max()
 
 
@@ -207,7 +213,7 @@ initial_Theta2 = randInitializeWeights(hid_size, num_labels)
 
 initial_nn_params = np.hstack((np.ravel(initial_Theta1), np.ravel(initial_Theta2)))
 
-lam = 1.0
+lam = .05
 X = X[:10000,:]
 J, grad = nnCostFunction(initial_nn_params, in_size, hid_size, num_labels, X, y_prob, lam)
 
@@ -234,3 +240,8 @@ y_pred = predict(Theta1, Theta2, Xt)
 #y_pred = model1.predict(Xt)
 print(y_prob[:10])
 print(y_pred)
+
+while True:
+    df_test = o.features
+    test = o.features[col]
+    test = test.fillna(d_mean)
