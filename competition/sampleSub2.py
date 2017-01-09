@@ -206,8 +206,6 @@ X = X.astype(np.float64)
 
 X /= X.max()
 
-
-
 initial_Theta1 = randInitializeWeights(in_size, hid_size)
 initial_Theta2 = randInitializeWeights(hid_size, num_labels)
 
@@ -223,7 +221,6 @@ res = optimize.minimize(fun=nnCostFunction, x0=initial_nn_params, method="CG", j
                                   args=(in_size, hid_size, num_labels, X, y_prob, lam))
 nn_params = res.x
 
-
 Theta1 = nn_params[0:(in_size + 1) * hid_size].reshape((hid_size, in_size + 1))
 Theta2 = nn_params[(in_size + 1) * hid_size:].reshape((num_labels, hid_size + 1))
 
@@ -234,9 +231,48 @@ y_pred = predict(Theta1, Theta2, Xt)
 
 
 
-#model1 = rfr.fit(X,y_prob)
+while True:
 
 
+
+    features = observation.features.copy()
+
+
+
+
+#    y_hat = gmodel_test.predict2(observation.features.copy())
+
+    target = observation.target
+
+    target['y'] = y_hat
+
+    timestamp = observation.features["timestamp"][0]
+
+
+    if timestamp % 100 == 0:
+
+        print("Timestamp #{}".format(timestamp))
+
+        y_true = env.temp_test_y
+
+        #y_true = np.exp(y_true)
+
+        score_ = r_score(y_true,y_hat)
+        rewards.append(score_)
+
+        print("-- score %.5f" % np.mean(rewards)  )
+        print("-- reward %.5f" % reward  )
+
+
+
+    # We perform a "step" by making our prediction and getting back an updated "observation":
+    observation, reward, done, info = env.step(target)
+
+<<<<<<< 4c6e4cd8bda6225134432bbbebf58570f4204b12
+    if done:
+        print("Public score: {}".format(info["public_score"]))
+        break
+=======
 #y_pred = model1.predict(Xt)
 print(y_prob[:10])
 print(y_pred)
@@ -245,3 +281,4 @@ while True:
     df_test = o.features
     test = o.features[col]
     test = test.fillna(d_mean)
+>>>>>>> sample sub2 change : neuro network program
